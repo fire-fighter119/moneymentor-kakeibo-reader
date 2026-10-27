@@ -1,6 +1,6 @@
-import {freedomAssets} from './freedom.mjs?v=20261028b';
+import {estimateAnnual} from './freedom.mjs?v=20261028c';
 import {prepareExpense,validateCategory} from './core.mjs';
-import {openDatabase,transact,merge,validate,summarize} from './data.mjs?v=20261028b';
+import {openDatabase,transact,merge,validate,summarize} from './data.mjs?v=20261028c';
 const $=id=>document.getElementById(id),money=n=>n.toLocaleString('ja-JP')+'円';
 let db,data,busy=false,mode='month',page='entry';
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
@@ -27,4 +27,4 @@ window.addEventListener('pageshow',()=>{if(db&&page==='summary')renderSummary();
 $('freedomYear').value=new Date().getFullYear();
 $('freedomYear').onchange=renderFreedom;
 let freedomLoad=0;
-async function renderFreedom(){const sequence=++freedomLoad;$('freedomResult').hidden=true;$('freedomStatus').textContent='';try{if(!db)throw Error('保存データを読み込めていません。');const saved=await transact(db);if(sequence!==freedomLoad)return;const actual=summarize(saved,{year:$('freedomYear').value,mode:'year'});if(!actual.records.length){$('freedomStatus').textContent='この年の記録はまだありません。家計簿に入力すると表示されます。';return;}const result=freedomAssets(actual);$('basicAssets').textContent=money(result.basic);$('totalAssets').textContent=money(result.total);$('basicSpending').textContent=money(actual.necessary);$('totalSpending').textContent=money(actual.total);$('freedomResult').hidden=false;}catch(e){if(sequence===freedomLoad)$('freedomStatus').textContent=e.message;}}
+async function renderFreedom(){const sequence=++freedomLoad;$('freedomResult').hidden=true;$('freedomStatus').textContent='';try{if(!db)throw Error('保存データを読み込めていません。');const saved=await transact(db);if(sequence!==freedomLoad)return;const result=estimateAnnual(saved.records,{year:$('freedomYear').value,today:today()});if(!result){$('freedomStatus').textContent='この年の記録はまだありません。家計簿に入力すると表示されます。';return;}$('basicAssets').textContent=money(result.assets.basic);$('totalAssets').textContent=money(result.assets.total);$('basicSpending').textContent=money(result.necessary);$('totalSpending').textContent=money(result.total);$('estimatePeriod').textContent=result.complete?'1年分の実績':result.days+'日分の平均から年換算';$('estimateDates').textContent=result.start.replaceAll('-','/')+'〜'+result.end.replaceAll('-','/');$('freedomResult').hidden=false;}catch(e){if(sequence===freedomLoad)$('freedomStatus').textContent=e.message;}}

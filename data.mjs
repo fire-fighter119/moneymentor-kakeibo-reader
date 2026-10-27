@@ -1,4 +1,4 @@
-import {validateBudget} from './freedom.mjs?v=20261028b';
+import {validateBudget} from './freedom.mjs?v=20261028c';
 import {prepareExpense,defaultCategories,validateCategory} from './core.mjs';
 export const defaultType=name=>['教育費','衣類','交際費','趣味・娯楽'].includes(name)?'ゆとり':'最低限';
 export const empty=()=>({format:'moneymentor-kakeibo',version:1,budget:null,records:[],categories:defaultCategories.map(name=>({name,type:defaultType(name)}))});
