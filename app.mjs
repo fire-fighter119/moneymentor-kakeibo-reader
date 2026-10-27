@@ -1,6 +1,6 @@
-import {freedomAssets} from './freedom.mjs';
+import {freedomAssets} from './freedom.mjs?v=20261028b';
 import {prepareExpense,validateCategory} from './core.mjs';
-import {openDatabase,transact,merge,validate,summarize} from './data.mjs';
+import {openDatabase,transact,merge,validate,summarize} from './data.mjs?v=20261028b';
 const $=id=>document.getElementById(id),money=n=>n.toLocaleString('ja-JP')+'円';
 let db,data,busy=false,mode='month',page='entry';
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
