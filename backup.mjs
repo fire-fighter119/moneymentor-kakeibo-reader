@@ -1,6 +1,6 @@
 // Passwords and keys are never persisted. AES-GCM authenticates the backup.
 const iterations=600000, enc=new TextEncoder(),dec=new TextDecoder();
-const b64=b=>btoa(Array.from(b,x=>String.fromCharCode(x)).join(''));
+const b64=b=>{let text='';for(let i=0;i<b.length;i+=32768)text+=String.fromCharCode(...b.subarray(i,i+32768));return btoa(text);};
 function bytes(s,max){if(typeof s!=='string'||s.length>max||!s.length||!/^[A-Za-z0-9+/]+={0,2}$/.test(s))throw Error('バックアップの形式が正しくありません。');return Uint8Array.from(atob(s),c=>c.charCodeAt(0));}
 async function key(password,salt,usage){const base=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',iterations,salt},base,{name:'AES-GCM',length:256},false,[usage]);}
 export const isEncrypted=d=>d?.format==='moneymentor-kakeibo-encrypted';
